@@ -1193,6 +1193,46 @@
                                 "remediation": "Use the latest stable OpenZeppelin version",
                                 "references": [],
                                 "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-OVI-19",
+                                "question": "Is a proxy whose implementation inherits `ERC2771ContextUpgradeable` from `@openzeppelin/contracts-upgradeable` below 4.3.0 being upgraded to an implementation built with 4.3.0 or later? (version >=4.0.0 <4.3.0)",
+                                "description": "`ERC2771ContextUpgradeable` occupies 51 storage slots in versions 4.0.0 to 4.2.0 and 50 slots from 4.3.0 onward. Upgrading a proxy across that boundary shifts the storage of every variable laid out after it by one slot, so the new implementation reads and writes the wrong slots and corrupts balances, roles or other state.",
+                                "remediation": "Before upgrading, compare the storage layouts of the old and new implementations with the OpenZeppelin Upgrades plugins or `forge inspect <Contract> storageLayout`. If the layout changes, keep the previous `ERC2771ContextUpgradeable` implementation (from the `release-4.2` branch) in the code base instead of the newer library version.",
+                                "references": [
+                                    "https://github.com/advisories/GHSA-7j52-6fjp-58gr"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-OVI-20",
+                                "question": "Does the project use `Multicall` from exactly version 4.9.4 of `@openzeppelin/contracts` or `@openzeppelin/contracts-upgradeable`? (version =4.9.4)",
+                                "description": "A merge error when porting the v5.0.1 `Multicall` change to the 4.9 branch duplicated the `delegatecall` line, so `multicall` in 4.9.4 executes every subcall twice. Batched transfers, mints, withdrawals or swaps run twice in the same transaction, and non-idempotent calls can move funds twice or double-count state. Check the version actually installed (lock file, vendored copy or `lib/` submodule commit), not only the declared version range.",
+                                "remediation": "Upgrade OpenZeppelin Contracts to 4.9.5 or later (4.9.4 is deprecated) and redeploy the affected contracts, or upgrade the implementation of upgradeable deployments.",
+                                "references": [
+                                    "https://github.com/advisories/GHSA-699g-q6qh-q4v8"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-OVI-21",
+                                "question": "Does the contract use OpenZeppelin's `Base64.encode` on input whose length is not a multiple of 3, for example when building on-chain `tokenURI` metadata or SVG data URIs, where the memory after the input may not be zero? (version >=4.5.0 <4.9.6 || >=5.0.0-rc.0 <5.0.2)",
+                                "description": "`Base64.encode` processes its input in 3-byte chunks, and when the length is not a multiple of 3 the last chunk reads past the end of the buffer. Up to 4 bits of that memory end up in the output before the padding, so the encoding is corrupted whenever the memory after the input is dirty, e.g. when another `bytes` object was allocated directly after it or the free memory pointer was moved back over used memory. The result is wrong metadata or data URIs, and an attacker who can influence the adjacent memory may be able to manipulate the encoded output.",
+                                "remediation": "Upgrade OpenZeppelin Contracts to 4.9.6 or 5.0.2 or later. Otherwise make sure the memory directly after the input is zero before encoding, and test the output for inputs of every length modulo 3.",
+                                "references": [
+                                    "https://github.com/advisories/GHSA-9vx6-7xxf-x967"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-OVI-22",
+                                "question": "Does the contract call OpenZeppelin's `Bytes.lastIndexOf(buffer, s, pos)` (the overload with a position argument) where `buffer` can be empty, and use the returned index without checking it against `buffer.length`? (version >=5.2.0 <5.4.0)",
+                                "description": "`Bytes.lastIndexOf(bytes,bytes1,uint256)` reads memory at `buffer + 0x20 + pos` when `buffer` is empty and `pos` is not `type(uint256).max`. If the byte found there matches, it returns an index outside the buffer instead of `type(uint256).max`, and a caller-controlled `pos` can make it read arbitrary memory or run out of gas. Code that treats any value other than `type(uint256).max` as found, or indexes into memory with the result without bounds checks, behaves unexpectedly.",
+                                "remediation": "Upgrade OpenZeppelin Contracts to 5.4.0 or later. Until then, return early when `buffer.length == 0` and check that the returned index is less than `buffer.length` before using it.",
+                                "references": [
+                                    "https://github.com/advisories/GHSA-9rcw-c2f9-2j55"
+                                ],
+                                "tags": []
                             }
                         ]
                     },
@@ -1637,6 +1677,96 @@
                                 "description": "Tuple assignments with components that occupy several stack slots, i.e. nested tuples, pointers to external functions or references to dynamically sized calldata arrays, can result in invalid values.",
                                 "remediation": "Use the latest Solidity version.",
                                 "references": [],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-49",
+                                "question": "Does the project compile standalone Yul code that uses several `verbatim` blocks which differ only in their raw bytecode and are surrounded by identical instructions? (version 0.8.5~0.8.22)",
+                                "description": "The block deduplicator of the opcode-based optimizer compared all `verbatim` items as if they were identical, so assembly blocks that differ only in the contents of their `verbatim` sections could be merged into one. The deployed bytecode then executes one block's raw bytecode in place of another's. `verbatim` is only available in standalone Yul, so Solidity sources, including inline assembly, are not affected.",
+                                "remediation": "Compile Yul sources with solc 0.8.23 or later, and compare the deployed bytecode against the intended `verbatim` sequences.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2023/11/08/verbatim-invalid-deduplication-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-50",
+                                "question": "Does the contract use a storage array whose slots straddle the end of storage (wrapping past slot 2**256-1 back to slot 0), for example a static array placed by a custom `layout at` base or an assembly-assigned storage pointer, and then clear or copy it with `delete`, `pop()`, `push()` or array assignment? (version 0.1.0~0.8.31)",
+                                "description": "Storage clearing loops (in both the legacy and IR pipelines) and, in the legacy pipeline, storage copy loops iterate over absolute slot addresses. For an array that wraps around the end of storage, the start slot is greater than the end slot, so the loop exits immediately and the old values silently remain. This affects `delete`, `pop()`, pushing an empty element, overwriting a longer array with a shorter one, and array assignment or initialization. A dynamic array is practically never placed there by chance; the realistic risk is a deliberately chosen storage layout or a slot computed by the developer.",
+                                "remediation": "Compile with solc 0.8.32 or later. Do not let any storage variable or array range cross the end of storage: check the slot arithmetic of custom `layout at` bases and assembly storage pointers.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2025/12/18/lost-storage-array-write-on-slot-overflow-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-51",
+                                "question": "When compiled via IR for Cancun or later, does the same contract (including the contracts it inherits from) both `delete` a `transient` state variable, such as a reentrancy lock or a flash-loan flag, and clear persistent storage with `delete`, `pop()` or by overwriting a longer array with a shorter one? (version 0.8.28~0.8.33)",
+                                "description": "The IR code generator named its storage-clearing helper without the data location, so the persistent and transient storage variants for the same value type collided and only one of them was emitted. In a contract that clears both, either the transient variable or the persistent storage is silently left untouched, depending on code generation order. A transient reentrancy lock or flag that is never reset can block every guarded call for the rest of the transaction or let a later callback pass a check it should fail, and uncleared persistent storage can leave stale balances, approvals or array elements behind. Both operations must end up in the same bytecode (both in runtime code or both in creation code), but they do not have to be in the same function or operate on the same type, because reference types are cleared slot by slot as `uint256`. Transient storage accessed through inline-assembly `tstore` rather than the `transient` keyword is not affected.",
+                                "remediation": "Compile with solc 0.8.34 or later. If the compiler cannot be upgraded, reset transient variables by assigning the zero value (e.g. `locked = false;`) instead of using `delete`, and add tests asserting that both the transient and the persistent locations are cleared.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/02/18/transient-storage-clearing-helper-collision-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-52",
+                                "question": "When compiled via IR, do several mutually recursive functions form intersecting call cycles (a function shared by more than one recursion loop), with at least one of them having enough local variables to run into stack-too-deep? (version 0.7.2~0.8.35)",
+                                "description": "To avoid stack-too-deep errors, the IR pipeline can move local variables to fixed memory offsets, which is only safe for functions that are not recursive, since all recursive activations would share the same memory. Its cycle detection skipped functions it had already explored, so a function lying on several intersecting cycles could be classified as non-recursive. If that function was complex enough to have variables moved to memory, a recursive call silently overwrote the caller's values, producing wrong results instead of a compile-time error. It is independent of the optimizer and depends on the order in which functions are processed (the hashes of their Yul names), so an unrelated change such as renaming a function can trigger or hide it.",
+                                "remediation": "Compile with solc 0.8.36 or later (0.8.37 also fixes the related SOL-2026-4). Otherwise avoid mutual recursion in via-IR builds by rewriting it iteratively, and test recursive code paths with deep inputs.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/07/09/unsound-spill-in-mutual-recursion-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-53",
+                                "question": "Does the contract use a custom storage layout (`layout at ...`) whose base is close enough to the end of storage that the compiler warns about it, while relying on inheritance order through constructors, state variable initializers, modifiers, `super` calls or `virtual`/`override` functions? (version 0.8.29~0.8.35)",
+                                "description": "When a `layout at` specifier places a contract's storage within the last 2**64 slots, the compiler emits a warning, and the code producing that warning reversed the linearized inheritance list in place. Every later compilation stage then sees the base contracts in reverse order: state variables are initialized and constructors run in the wrong order, and `super` calls, virtual functions and modifiers resolve to the wrong implementation. The result is miscompiled bytecode or an internal compiler error, independent of the pipeline and optimizer settings. A compiler warning about storage being too close to the end of the address space means the build may be affected.",
+                                "remediation": "Compile with solc 0.8.36 or later. Do not place the storage base in the last 2**64 slots: choose a base that does not trigger the warning, and treat that warning as a build failure.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/07/09/inheritance-order-reversal-on-storage-end-warning-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-54",
+                                "question": "When compiled via IR, does the code contain mutually recursive functions (e.g. `a()` calls `b()` which calls `a()`) that call into a function with enough local variables to hit stack-too-deep, while a separate call chain enters the recursion and keeps using its own local variables after the call returns? (version 0.7.2~0.8.36)",
+                                "description": "To avoid stack-too-deep errors, the IR pipeline can move local variables to fixed memory offsets and lets functions that can never be active at the same time share them. When the call graph contains a cycle of mutually recursive functions, the memory needed by that cycle was under-counted, so a function called from the cycle and a function calling into it could be given the same offset. A relocated variable that is read after the call returns has then been silently overwritten, producing wrong results without any compiler error. From 0.8.21 onward this happens whether or not the optimizer is enabled. Recursive parsers, decoders (e.g. RLP or nested ABI data) and tree or path traversals are typical places to look.",
+                                "remediation": "Compile with solc 0.8.37 or later. Otherwise remove the mutual recursion by rewriting it iteratively, or reduce the number of local variables so that none need to be moved to memory, and compare the results of recursive paths against a legacy-pipeline build.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/09/10/spill-slot-collision-across-mutual-recursion-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-55",
+                                "question": "When compiled without via IR, does the contract use `delete` on a single element of a `bytes` array in memory (e.g. `delete buf[i]`), especially on the result of `abi.encode*`, `bytes.concat` or `string.concat`? (version ~0.8.36)",
+                                "description": "The legacy (evmasm) code generator implements `delete` on an element of a `bytes memory` array with a full 32-byte `MSTORE` instead of a single-byte `MSTORE8`, zeroing that element and up to 31 bytes after it. Near the end of the allocation it also clears the first bytes of the next object in memory. The results of `abi.encode*`, `bytes.concat` and `string.concat` are allocated without padding, so any of their last 31 elements can reach the next object; arrays from `new bytes(n)` or literals are only exposed within their padding. Encoded payloads, signatures or hashes built from such buffers can change silently. Assigning `b[i] = 0`, byte arrays in storage, transient storage or calldata, and via-IR builds are not affected.",
+                                "remediation": "Compile with solc 0.8.37 or later, or with `viaIR`. Otherwise replace `delete b[i]` on memory byte arrays with `b[i] = 0`.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/09/10/memory-byte-array-element-delete-clears-whole-word-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-56",
+                                "question": "When compiled via IR, does the contract pass a custom error constructed with named arguments as the second argument of `require`, e.g. `require(ok, InsufficientBalance({available: a, required: r}))`, with the arguments in a different order from the error's declaration? (version 0.8.26~0.8.36)",
+                                "description": "With `viaIR`, the arguments of a custom error passed to `require` using named-parameter syntax are ABI-encoded in call-site order instead of declaration order. Compilation succeeds and the revert data still carries the correct error selector, but the decoded fields hold the wrong values, may be reinterpreted as other types (reading reference types from wrong offsets), or the encoder may run out of gas. Off-chain tooling, integrators and contracts that decode and act on revert data receive misleading values. `revert Error({...})` statements, events, other named-argument constructs and the legacy pipeline are not affected.",
+                                "remediation": "Compile with solc 0.8.37 or later. Otherwise pass the error arguments positionally in declaration order, or replace `require(cond, Err({...}))` with `if (!cond) revert Err({...});`.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/09/10/misordered-named-parameters-in-require-with-custom-errors-bug/"
+                                ],
+                                "tags": []
+                            },
+                            {
+                                "id": "SOL-Basics-VI-SVI-57",
+                                "question": "Is the contract compiled with the optimizer, either via IR or with inline assembly that does not reference Solidity variables, and does it compute memory or storage locations from a variable that is later reassigned, such as a pointer or slot advanced in a loop? (version 0.8.19~0.8.37)",
+                                "description": "The Yul optimizer steps `LoadResolver` and `EqualStoreEliminator` describe an address as an offset from a base variable but did not always notice when that base was reassigned. Locations computed from the old and the new value of the same variable could be treated as distinct even when they coincided at runtime, so a load could return a stale value, a needed store could be removed, and `keccak256` over the location could hash outdated data. With `viaIR`, any optimized code can be affected, including code without inline assembly; with the legacy pipeline, only inline assembly that does not reference Solidity variables or functions, and compiler-generated Yul helpers, are affected. Unoptimized code is not affected. Whether the bug triggers depends on the optimizer sequence and the surrounding code, so it cannot be ruled out by reading the source alone.",
+                                "remediation": "Compile with solc 0.8.38 or later. If the compiler cannot be upgraded, disable the optimizer for the affected contracts, or differential-test the optimized build against an unoptimized one on code paths that reuse a reassigned pointer or slot variable.",
+                                "references": [
+                                    "https://blog.soliditylang.org/2026/10/22/yul-optimizer-knowledge-base-stale-bookkeeping-bug/"
+                                ],
                                 "tags": []
                             }
                         ]
