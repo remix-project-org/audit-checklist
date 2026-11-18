@@ -124,6 +124,20 @@ class SemverTest(unittest.TestCase):
         self.assertTrue(lib.satisfies("0.8.25", "^0.8.0"))
 
 
+class OsvIndexTest(unittest.TestCase):
+    def test_collects_ranges_from_every_affected_entry(self):
+        import backfill_tags
+        vuln = {"id": "GHSA-test", "database_specific": {"severity": "MODERATE"}, "affected": [
+            {"package": {"name": "@openzeppelin/contracts"}, "ranges": [{"events": [{"introduced": "4.5.0"}, {"fixed": "4.9.6"}]}]},
+            {"package": {"name": "@openzeppelin/contracts"}, "ranges": [{"events": [{"introduced": "5.0.0-rc.0"}, {"fixed": "5.0.2"}]}]},
+        ]}
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in ("oz-contracts.json", "oz-contracts-upgradeable.json"):
+                Path(tmp, name).write_text(json.dumps({"vulns": [vuln]}))
+            index = backfill_tags.osv_index(Path(tmp))
+        self.assertEqual(index["GHSA-test"]["ranges"]["@openzeppelin/contracts"], ">=4.5.0 <4.9.6 || >=5.0.0-rc.0 <5.0.2")
+
+
 class SyncTest(unittest.TestCase):
     def test_round_trip_keeps_fork_fields_and_fork_only_items(self):
         tagged = copy.deepcopy(VALID_ITEM)
