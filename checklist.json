@@ -4076,11 +4076,11 @@
                                     "dependencies": [
                                         {
                                             "package": "@openzeppelin/contracts",
-                                            "range": ">=3.3.0 <3.4.2"
+                                            "range": ">=3.3.0 <3.4.2 || >=4.0.0 <4.3.1"
                                         },
                                         {
                                             "package": "@openzeppelin/contracts-upgradeable",
-                                            "range": ">=3.3.0 <3.4.2"
+                                            "range": ">=3.3.0 <3.4.2 || >=4.0.0 <4.3.1"
                                         }
                                     ]
                                 },

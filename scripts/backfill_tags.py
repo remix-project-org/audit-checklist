@@ -360,19 +360,28 @@ def osv_index(osv_dir: Path) -> dict:
         for vuln in lib.load_json(osv_dir / fname).get("vulns", []):
             entry = index.setdefault(vuln["id"], {"severity": None, "ranges": {}, "summary": vuln.get("summary", "")})
             entry["severity"] = (vuln.get("database_specific") or {}).get("severity") or entry["severity"]
+            # OSV may list several `affected` entries for one package, and several
+            # introduced/fixed pairs within one range: collect every pair.
+            pairs = []
             for aff in vuln.get("affected", []):
                 if aff["package"]["name"] != pkg:
                     continue
-                alts = []
                 for rng in aff.get("ranges", []):
-                    intro = fixed = None
+                    intro = None
                     for ev in rng["events"]:
-                        intro = ev.get("introduced", intro)
-                        fixed = ev.get("fixed", fixed)
-                    lo = f">={intro} " if intro and intro != "0" else ""
-                    alts.append(f"{lo}<{fixed}" if fixed else f">={intro}")
-                if alts:
-                    entry["ranges"][pkg] = " || ".join(sorted(alts, key=lambda a: lib.parse_version(re.findall(r"[\d.]+(?:-[\w.]+)?", a)[0])))
+                        if "introduced" in ev:
+                            intro = ev["introduced"]
+                        elif "fixed" in ev:
+                            pairs.append((intro, ev["fixed"]))
+                            intro = None
+                    if intro is not None:
+                        pairs.append((intro, None))
+            alts = []
+            for intro, fixed in sorted(set(pairs), key=lambda p: lib.parse_version(p[0] if p[0] not in (None, "0") else "0.0.0")):
+                lo = f">={intro}" if intro and intro != "0" else ""
+                alts.append(" ".join(x for x in (lo, f"<{fixed}" if fixed else "") if x))
+            if alts:
+                entry["ranges"][pkg] = " || ".join(alts)
     return index
 
 
