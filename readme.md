@@ -35,6 +35,10 @@ The checklist is divided into multiple categories, each containing a list of ite
 - **Remediation**: A list of steps to take to remediate the item.
 - **References**: A list of references to learn more about the item.
 
+### Machine-readable tags (Remix fork)
+
+In this fork, each item also carries tags that tools can use to pick the items relevant to a contract and to plan verification: `vuln_category`, `severity_prior`, `applicability`, `detection_hint`, `verification`, `provenance` and `review_status`. These fields are additive, and the upstream fields above keep their meaning. See [SCHEMA.md](./SCHEMA.md) for the format, [SYNC.md](./SYNC.md) for merging upstream changes, and run `python scripts/validate.py` before opening a PR.
+
 ## Contribution
 We welcome contributions from the community. Issues and pull requests are encouraged.
 Contributions can be made from the Solodit website in a more user-friendly format as well.
