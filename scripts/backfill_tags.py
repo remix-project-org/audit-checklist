@@ -238,6 +238,8 @@ NEEDS_REVIEW = {
     "SOL-Basics-VI-OVI-4": "No GHSA exists for this ERC777 issue; the only source is Snyk (ref/1-openzeppelin_bugs.json). Range <3.4.0-rc.0 not independently verified.",
     "SOL-Basics-VI-OVI-9": "Question states >=2.3.0 <4.7.2; GHSA-7grf-83vw-6f5x lists >=2.0.0 (contracts) and >=3.2.0 (contracts-upgradeable). applicability uses the GHSA ranges; question text left unchanged.",
     "SOL-Basics-VI-OVI-18": "Question contains a malformed range ('<4.3.1\\\\n<3.4.2'). applicability uses the GHSA ranges (>=3.3.0 <3.4.2 || >=4.0.0 <4.3.1); question text left unchanged to stay in sync with upstream.",
+    "SOL-Basics-VI-SVI-49": "The bug affects only standalone Yul sources that use `verbatim`; Solidity sources, including inline assembly, are unaffected. For a Solidity auditor this applies to almost no contract, and no feature key can gate it. Decide whether to keep it, or add a Yul-source feature.",
+    "SOL-Basics-VI-SVI-57": "Not decidable from source alone: whether the bug triggers depends on the optimizer sequence and the surrounding intermediate code (the item's own description says so). Version and settings matching is deterministic, but the question asks for a code pattern that is only a necessary condition. Consider recasting it as a version/settings check plus a differential test (optimized vs unoptimized build).",
 }
 
 VULN_CATEGORY_OVERRIDES = {
@@ -268,6 +270,12 @@ SVI_BUGS = {
     43: "DelegateCallReturnValue", 44: "ECRecoverMalformedInput", 45: "MissingSideEffectsOnSelectorAccess",
     46: "DataLocationChangeInInternalOverride", 47: "FreeFunctionRedefinition",
     48: "TupleAssignmentMultiStackSlotComponents",
+    # Added in this fork (PR #1); texts generated from the Solidity blog posts.
+    49: "VerbatimInvalidDeduplication", 50: "LostStorageArrayWriteOnSlotOverflow",
+    51: "TransientStorageClearingHelperCollision", 52: "UnsoundSpillInMutualRecursion",
+    53: "InheritanceOrderReversalOnStorageEndWarning", 54: "SpillSlotCollisionAcrossMutualRecursion",
+    55: "MemoryByteArrayElementDeleteClearsWholeWord", 56: "MisorderedNamedParametersInRequireWithCustomErrors",
+    57: "YulOptimizerKnowledgeBaseStaleBookkeeping",
 }
 SVI_FEATURES = {
     9: {"all_of": ["uses_assembly"]},
@@ -276,6 +284,25 @@ SVI_FEATURES = {
     26: {"all_of": ["has_loops"]},
     43: {"all_of": ["uses_delegatecall"]},
     44: {"all_of": ["verifies_signatures"]},
+    50: {"any_of": ["uses_custom_storage_layout", "uses_assembly"]},
+    52: {"all_of": ["has_recursion"]},
+    53: {"all_of": ["uses_custom_storage_layout"]},
+    54: {"all_of": ["has_recursion"]},
+}
+
+# Items this fork added (not from Cyfrin): no `cyfrin` provenance source.
+FORK_ADDED_ITEMS = {f"SOL-Basics-VI-SVI-{n}" for n in range(49, 58)} | {f"SOL-Basics-VI-OVI-{n}" for n in range(19, 23)}
+
+AST_PATTERNS = {
+    "SOL-Basics-VI-SVI-49": "`verbatim_<n>i_<m>o(...)` builtins in a standalone Yul source, in blocks that differ only in the verbatim bytecode.",
+    "SOL-Basics-VI-SVI-50": "Static storage array whose slot range wraps past 2**256-1 (custom `layout at` base or assembly `.slot` assignment), combined with `delete`, `.pop()`, `.push()` or array assignment.",
+    "SOL-Basics-VI-SVI-51": "`delete` on a `transient` state variable, plus `delete`/`.pop()`/shrinking array assignment on persistent storage, in the same bytecode (runtime or creation).",
+    "SOL-Basics-VI-SVI-52": "Internal call graph with intersecting cycles of mutually recursive functions, at least one of which would hit stack-too-deep.",
+    "SOL-Basics-VI-SVI-53": "Contract with a `layout at <expr>` base within 2**64 slots of the end of storage (the compiler emits a warning).",
+    "SOL-Basics-VI-SVI-54": "Cycle of two or more mutually recursive functions calling into a function with stack-too-deep locals, entered from a separate call chain that reads its own locals after the call returns.",
+    "SOL-Basics-VI-SVI-55": "`delete` applied to an IndexAccess on a `bytes memory` variable.",
+    "SOL-Basics-VI-SVI-56": "`require(cond, ErrorName({...}))` with named arguments in an order different from the error declaration.",
+    "SOL-Basics-VI-SVI-57": "Memory or storage address computed from a variable that is reassigned later in the same function (e.g. a pointer or slot advanced in a loop).",
 }
 
 # bugs.json severity -> severity_prior (rounded up: a confirmed miscompilation is never informational).
@@ -308,6 +335,11 @@ OVI_ADVISORIES = {
     16: (["GHSA-wmpv-c2jp-j2xg"], ["inherits:ERC1155Supply"]),
     17: (["GHSA-5vp3-v4hc-gx76", "GHSA-q4h9-46xg-m3x9"], ["inherits:UUPSUpgradeable"]),
     18: (["GHSA-fg47-3c2x-m2wr", "GHSA-vrw4-w73r-6mm8"], ["inherits:TimelockController"]),
+    # Added in this fork (PR #1).
+    19: (["GHSA-7j52-6fjp-58gr"], ["inherits:ERC2771ContextUpgradeable"]),
+    20: (["GHSA-699g-q6qh-q4v8"], ["inherits:Multicall"]),
+    21: (["GHSA-9vx6-7xxf-x967"], ["uses_library:Base64"]),
+    22: (["GHSA-9rcw-c2f9-2j55"], ["uses_library:Bytes"]),
 }
 OVI_SNYK_RANGES = {4: "<3.4.0-rc.0"}
 GHSA_SEVERITY = {"LOW": "low", "MODERATE": "medium", "HIGH": "high", "CRITICAL": "critical"}
@@ -410,7 +442,7 @@ def tag_item(path: tuple[str, ...], item: dict, ctx: dict) -> dict:
     if iid in VERIFICATION_OVERRIDES:
         method, prop = VERIFICATION_OVERRIDES[iid]
 
-    sources = [{"type": "cyfrin", "ref": iid, "url": CYFRIN_URL}]
+    sources = [] if iid in FORK_ADDED_ITEMS else [{"type": "cyfrin", "ref": iid, "url": CYFRIN_URL}]
     for ref in item.get("references", []):
         add_source(sources, reference_source(ref))
 
@@ -467,8 +499,13 @@ def tag_item(path: tuple[str, ...], item: dict, ctx: dict) -> dict:
     tagged["vuln_category"] = vuln_category
     tagged["severity_prior"] = severity
     tagged["applicability"] = applicability
+    hint = {}
     if iid in SLITHER_HINTS:
-        tagged["detection_hint"] = {"slither": SLITHER_HINTS[iid]}
+        hint["slither"] = SLITHER_HINTS[iid]
+    if iid in AST_PATTERNS:
+        hint["ast_pattern"] = AST_PATTERNS[iid]
+    if hint:
+        tagged["detection_hint"] = hint
     tagged["verification"] = {"method": method, **({"property": prop} if prop else {})}
     tagged["provenance"] = {"sources": sources, "last_reviewed": ctx["date"]}
     tagged["review_status"] = status

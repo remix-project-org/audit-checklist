@@ -148,5 +148,9 @@ Optional. `slither` lists detector IDs from `vocabulary.json#/slither_detectors`
 | `python -m unittest discover -s tests` | tooling tests |
 | `python scripts/backfill_tags.py --solidity-bugs … --bugs-by-version … --osv-dir …` | tag items that have no tags yet (see the script header for inputs) |
 | `python scripts/sync_upstream.py --upstream …` | merge an upstream checklist.json, keeping fork tags (see [SYNC.md](SYNC.md)) |
+| `python scripts/new_item.py solidity-bug <uid> --draft d.json --solidity-bugs bugs.json [--insert]` | create a compiler-bug item: drafted text plus applicability and provenance from bugs.json; always `needs_review` |
+| `python scripts/new_item.py ghsa <GHSA-ID> --draft d.json --osv-dir osv [--insert]` | create an OpenZeppelin advisory item: drafted text plus ranges and provenance from OSV; always `needs_review` |
+
+**Generating new items.** Write or generate the `question`, `description` and `remediation` into a draft JSON file, then run `new_item.py`. The script takes version ranges, compiler settings, severity and sources from the official data only, refuses unknown bug or advisory IDs, and marks the result `needs_review`. A model may draft the text, but it never supplies the ranges or the source IDs.
 
 `scripts/backfill_tags.py` holds the rule tables used for the initial backfill: per-category defaults, per-item overrides, the SVI→bugs.json mapping and the OVI→GHSA mapping. Review the tables to judge `auto_tagged` values in bulk.

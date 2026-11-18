@@ -4119,7 +4119,35 @@
                                 "references": [
                                     "https://github.com/advisories/GHSA-7j52-6fjp-58gr"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "dependency-vulnerability",
+                                "severity_prior": "low",
+                                "applicability": {
+                                    "any_of": [
+                                        "inherits:ERC2771ContextUpgradeable"
+                                    ],
+                                    "dependencies": [
+                                        {
+                                            "package": "@openzeppelin/contracts-upgradeable",
+                                            "range": ">=4.0.0 <4.3.0"
+                                        }
+                                    ]
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: installed OpenZeppelin version is in range; then confirm the affected contract or function is used."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "ghsa",
+                                            "ref": "GHSA-7j52-6fjp-58gr",
+                                            "url": "https://github.com/advisories/GHSA-7j52-6fjp-58gr"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-OVI-20",
@@ -4129,7 +4157,40 @@
                                 "references": [
                                     "https://github.com/advisories/GHSA-699g-q6qh-q4v8"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "dependency-vulnerability",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "any_of": [
+                                        "inherits:Multicall",
+                                        "inherits:MulticallUpgradeable"
+                                    ],
+                                    "dependencies": [
+                                        {
+                                            "package": "@openzeppelin/contracts",
+                                            "range": ">=4.9.4 <4.9.5"
+                                        },
+                                        {
+                                            "package": "@openzeppelin/contracts-upgradeable",
+                                            "range": ">=4.9.4 <4.9.5"
+                                        }
+                                    ]
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: installed OpenZeppelin version is in range; then confirm the affected contract or function is used."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "ghsa",
+                                            "ref": "GHSA-699g-q6qh-q4v8",
+                                            "url": "https://github.com/advisories/GHSA-699g-q6qh-q4v8"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-OVI-21",
@@ -4139,7 +4200,40 @@
                                 "references": [
                                     "https://github.com/advisories/GHSA-9vx6-7xxf-x967"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "dependency-vulnerability",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "any_of": [
+                                        "uses_library:Base64",
+                                        "uses_library:Base64Upgradeable"
+                                    ],
+                                    "dependencies": [
+                                        {
+                                            "package": "@openzeppelin/contracts",
+                                            "range": ">=4.5.0 <4.9.6 || >=5.0.0-rc.0 <5.0.2"
+                                        },
+                                        {
+                                            "package": "@openzeppelin/contracts-upgradeable",
+                                            "range": ">=4.5.0 <4.9.6 || >=5.0.0-rc.0 <5.0.2"
+                                        }
+                                    ]
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: installed OpenZeppelin version is in range; then confirm the affected contract or function is used."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "ghsa",
+                                            "ref": "GHSA-9vx6-7xxf-x967",
+                                            "url": "https://github.com/advisories/GHSA-9vx6-7xxf-x967"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-OVI-22",
@@ -4149,7 +4243,40 @@
                                 "references": [
                                     "https://github.com/advisories/GHSA-9rcw-c2f9-2j55"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "dependency-vulnerability",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "any_of": [
+                                        "uses_library:Bytes",
+                                        "uses_library:BytesUpgradeable"
+                                    ],
+                                    "dependencies": [
+                                        {
+                                            "package": "@openzeppelin/contracts",
+                                            "range": ">=5.2.0 <5.4.0"
+                                        },
+                                        {
+                                            "package": "@openzeppelin/contracts-upgradeable",
+                                            "range": ">=5.2.0 <5.4.0"
+                                        }
+                                    ]
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: installed OpenZeppelin version is in range; then confirm the affected contract or function is used."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "ghsa",
+                                            "ref": "GHSA-9rcw-c2f9-2j55",
+                                            "url": "https://github.com/advisories/GHSA-9rcw-c2f9-2j55"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             }
                         ]
                     },
@@ -6017,7 +6144,35 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2023/11/08/verbatim-invalid-deduplication-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "low",
+                                "applicability": {
+                                    "solc": ">=0.8.5 <0.8.23"
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "`verbatim_<n>i_<m>o(...)` builtins in a standalone Yul source, in blocks that differ only in the verbatim bytecode."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2023/11/08/verbatim-invalid-deduplication-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2023-3",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "needs_review",
+                                "review_notes": "The bug affects only standalone Yul sources that use `verbatim`; Solidity sources, including inline assembly, are unaffected. For a Solidity auditor this applies to almost no contract, and no feature key can gate it. Decide whether to keep it, or add a Yul-source feature."
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-50",
@@ -6027,7 +6182,38 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2025/12/18/lost-storage-array-write-on-slot-overflow-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "low",
+                                "applicability": {
+                                    "solc": ">=0.1.0 <0.8.32",
+                                    "any_of": [
+                                        "uses_custom_storage_layout",
+                                        "uses_assembly"
+                                    ]
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "Static storage array whose slot range wraps past 2**256-1 (custom `layout at` base or assembly `.slot` assignment), combined with `delete`, `.pop()`, `.push()` or array assignment."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2025/12/18/lost-storage-array-write-on-slot-overflow-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2025-1",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-51",
@@ -6037,7 +6223,38 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/02/18/transient-storage-clearing-helper-collision-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "high",
+                                "applicability": {
+                                    "solc": ">=0.8.28 <0.8.34",
+                                    "compiler_settings": {
+                                        "via_ir": true,
+                                        "evm_version": ">=cancun"
+                                    }
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "`delete` on a `transient` state variable, plus `delete`/`.pop()`/shrinking array assignment on persistent storage, in the same bytecode (runtime or creation)."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/02/18/transient-storage-clearing-helper-collision-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-1",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-52",
@@ -6047,7 +6264,40 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/07/09/unsound-spill-in-mutual-recursion-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "solc": ">=0.7.2 <0.8.36",
+                                    "compiler_settings": {
+                                        "via_ir": true
+                                    },
+                                    "all_of": [
+                                        "has_recursion"
+                                    ]
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "Internal call graph with intersecting cycles of mutually recursive functions, at least one of which would hit stack-too-deep."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/07/09/unsound-spill-in-mutual-recursion-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-2",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-53",
@@ -6057,7 +6307,37 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/07/09/inheritance-order-reversal-on-storage-end-warning-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "solc": ">=0.8.29 <0.8.36",
+                                    "all_of": [
+                                        "uses_custom_storage_layout"
+                                    ]
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "Contract with a `layout at <expr>` base within 2**64 slots of the end of storage (the compiler emits a warning)."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/07/09/inheritance-order-reversal-on-storage-end-warning-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-3",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-54",
@@ -6067,7 +6347,40 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/09/10/spill-slot-collision-across-mutual-recursion-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "solc": ">=0.7.2 <0.8.37",
+                                    "compiler_settings": {
+                                        "via_ir": true
+                                    },
+                                    "all_of": [
+                                        "has_recursion"
+                                    ]
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "Cycle of two or more mutually recursive functions calling into a function with stack-too-deep locals, entered from a separate call chain that reads its own locals after the call returns."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/09/10/spill-slot-collision-across-mutual-recursion-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-4",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-55",
@@ -6077,7 +6390,37 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/09/10/memory-byte-array-element-delete-clears-whole-word-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "medium",
+                                "applicability": {
+                                    "solc": "<0.8.37",
+                                    "compiler_settings": {
+                                        "via_ir": false
+                                    }
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "`delete` applied to an IndexAccess on a `bytes memory` variable."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/09/10/memory-byte-array-element-delete-clears-whole-word-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-5",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-56",
@@ -6087,7 +6430,37 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/09/10/misordered-named-parameters-in-require-with-custom-errors-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "low",
+                                "applicability": {
+                                    "solc": ">=0.8.26 <0.8.37",
+                                    "compiler_settings": {
+                                        "via_ir": true
+                                    }
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "`require(cond, ErrorName({...}))` with named arguments in an order different from the error declaration."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/09/10/misordered-named-parameters-in-require-with-custom-errors-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-6",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "auto_tagged"
                             },
                             {
                                 "id": "SOL-Basics-VI-SVI-57",
@@ -6097,7 +6470,38 @@
                                 "references": [
                                     "https://blog.soliditylang.org/2026/10/22/yul-optimizer-knowledge-base-stale-bookkeeping-bug/"
                                 ],
-                                "tags": []
+                                "tags": [],
+                                "vuln_category": "compiler-bug",
+                                "severity_prior": "low",
+                                "applicability": {
+                                    "solc": ">=0.8.19 <0.8.38",
+                                    "compiler_settings": {
+                                        "yul_optimizer": true
+                                    }
+                                },
+                                "detection_hint": {
+                                    "ast_pattern": "Memory or storage address computed from a variable that is reassigned later in the same function (e.g. a pointer or slot advanced in a loop)."
+                                },
+                                "verification": {
+                                    "method": "manual_only",
+                                    "property": "Deterministic: compiler version and settings match the range; then confirm the triggering construct is present."
+                                },
+                                "provenance": {
+                                    "sources": [
+                                        {
+                                            "type": "solidity_blog",
+                                            "url": "https://blog.soliditylang.org/2026/10/22/yul-optimizer-knowledge-base-stale-bookkeeping-bug/"
+                                        },
+                                        {
+                                            "type": "solidity_bugs_json",
+                                            "ref": "SOL-2026-7",
+                                            "url": "https://github.com/ethereum/solidity/blob/develop/docs/bugs.json"
+                                        }
+                                    ],
+                                    "last_reviewed": "2026-11-18"
+                                },
+                                "review_status": "needs_review",
+                                "review_notes": "Not decidable from source alone: whether the bug triggers depends on the optimizer sequence and the surrounding intermediate code (the item's own description says so). Version and settings matching is deterministic, but the question asks for a code pattern that is only a necessary condition. Consider recasting it as a version/settings check plus a differential test (optimized vs unoptimized build)."
                             }
                         ]
                     }
